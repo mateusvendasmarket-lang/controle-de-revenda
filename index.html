@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Controle de Revenda</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--tx:#1a1d21;--mut:#6b7280;--bd:#e3e6ea;--ac:#2563eb;--ok:#15803d;--bad:#b91c1c;--warn:#b45309;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111316;--card:#1b1e23;--tx:#eceef1;--mut:#9aa1ab;--bd:#2c3036;--ac:#6ea0ff;--ok:#4ade80;--bad:#f87171;--warn:#fbbf24;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#111316;--card:#1b1e23;--tx:#eceef1;--mut:#9aa1ab;--bd:#2c3036;--ac:#6ea0ff;--ok:#4ade80;--bad:#f87171;--warn:#fbbf24;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:640px;margin:0 auto;padding:16px}
+.hd{display:flex;justify-content:space-between;align-items:center;margin:4px 0 14px;gap:8px}h1{font-size:20px;margin:0}.hd button{padding:6px 12px}.hd .bt{display:flex;gap:6px}.pl{display:flex;justify-content:space-between;padding:5px 0;font-size:14px;border-top:1px solid var(--bd)}
+.sum{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.k{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:10px 12px}
+.k small{color:var(--mut);display:block;font-size:12px}
+.k b{font-size:17px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px;margin-bottom:12px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+label{display:block;font-size:12px;color:var(--mut)}
+input,select{width:100%;margin-top:2px;padding:9px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font:inherit}
+.full{grid-column:1/-1}
+button{font:inherit;border:0;border-radius:8px;padding:10px 14px;background:var(--ac);color:#fff;cursor:pointer}
+button:disabled{opacity:.6;cursor:default}
+button.s{background:var(--bd);color:var(--tx)}
+button.d{background:transparent;color:var(--bad)}
+.row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.chips{display:flex;gap:6px;margin-bottom:10px;overflow-x:auto}
+.chips button{padding:6px 12px;background:var(--card);color:var(--tx);border:1px solid var(--bd);white-space:nowrap}
+.chips button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+.it{cursor:pointer}
+.top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.tag{font-size:11px;padding:2px 8px;border-radius:99px;border:1px solid var(--bd);color:var(--mut);white-space:nowrap}
+.meta{color:var(--mut);font-size:13px;margin-top:6px}
+.pos{color:var(--ok)}.neg{color:var(--bad)}
+.empty{text-align:center;color:var(--mut);padding:24px}summary{cursor:pointer}
+.aviso{color:var(--bad);font-size:13px;margin:0 0 12px}
+</style>
+</head>
+<body>
+<main>
+<div class="hd"><h1>Controle de Revenda</h1><div class="bt"><button class="s" id="tema">🌓 Tema</button><button class="s" id="sair" hidden>Sair</button></div></div>
+<div class="aviso" id="aviso" hidden></div>
+
+<div class="card" id="login" hidden>
+<div class="grid">
+<label class="full">E-mail<input id="email" type="email" autocomplete="username" inputmode="email"></label>
+<label class="full">Senha<input id="senha" type="password" autocomplete="current-password"></label>
+</div>
+<div class="row"><button id="entrar">Entrar</button></div>
+<div class="meta" id="loginMsg"></div>
+</div>
+
+<div id="app" hidden>
+<div class="sum" id="sum"></div>
+<div class="card" id="plat"></div>
+<div class="card" id="mes"></div>
+<div class="card" id="top"></div>
+
+<div class="card">
+<div class="grid">
+<label class="full">Produto<input id="nome" list="listaProds" placeholder="Escolha ou digite"><datalist id="listaProds"></datalist></label>
+<label>Valor de compra (R$)<input id="compra" type="number" inputmode="decimal" step="0.01"></label>
+<label>Custo de frete (R$)<input id="frete" type="number" inputmode="decimal" step="0.01"></label>
+<label>Data da compra<input id="dCompra" type="date"></label>
+<label>Chegou em<input id="dChegada" type="date"></label>
+<label>Anúncio publicado em<input id="dAnuncio" type="date"></label>
+<label>Preço anunciado (R$)<input id="anuncio" type="number" inputmode="decimal" step="0.01"></label>
+<label>Valor vendido (R$)<input id="venda" type="number" inputmode="decimal" step="0.01"></label>
+<label>Frete cobrado do comprador (R$)<input id="freteCob" type="number" inputmode="decimal" step="0.01"></label>
+<label>Data da venda<input id="dVenda" type="date"></label>
+<label>Vendido em<select id="plataforma"><option value="">—</option><option>Facebook Marketplace</option><option>Mercado Livre</option><option>Shopee</option><option>Venda direta</option></select></label>
+<label>Comprador<input id="comprador" placeholder="Nome"></label>
+<label class="full">Contato do comprador (opcional)<input id="contato" placeholder="WhatsApp, telefone ou perfil"></label>
+</div>
+<div class="row">
+<button id="save">Adicionar</button>
+<button class="s" id="cancel" hidden>Cancelar</button>
+<button class="d" id="del" hidden>Excluir</button>
+</div>
+</div>
+
+<details class="card"><summary><b>Cadastro de produtos</b></summary>
+<div class="grid" style="margin-top:10px">
+<label class="full">Nome do produto<input id="pnome" placeholder="Ex.: Fone Bluetooth"></label>
+<label>Custo usual (R$)<input id="pcusto" type="number" inputmode="decimal" step="0.01"></label>
+<label>Preço de venda (R$)<input id="ppreco" type="number" inputmode="decimal" step="0.01"></label>
+</div>
+<div class="row"><button id="pAdd">Cadastrar</button></div>
+<div id="pList" style="margin-top:8px"></div>
+</details>
+<div class="chips" id="chips"></div>
+<div id="list"></div>
+</div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+var SB_URL="https://jirpeeemufjnqnovvytr.supabase.co";
+var SB_KEY="sb_publishable_hJMO_LWPST5IN-Nh0U-JeQ_avQa2FO_";
+var sb=null;
+var items=[],prods=[],editId=null,filter="todos",pEdit=null,delArmed=false;
+var $=function(i){return document.getElementById(i)};
+var F=["nome","compra","frete","dCompra","dChegada","dAnuncio","anuncio","venda","freteCob","dVenda","plataforma","comprador","contato"];
+var money=function(n){return (n||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"})};
+var dt=function(s){return s?s.split("-").reverse().slice(0,2).join("/"):""};
+var days=function(a,b){return Math.round((new Date(b)-new Date(a))/864e5)};
+function status(i){return i.dVenda||i.venda?"Vendido":i.dAnuncio?"Anunciado":i.dChegada?"Em estoque":"A caminho"}
+function num(v){var n=parseFloat(v);return isNaN(n)?0:n}
+function toRow(o){var d=Object.assign({},o);delete d.id;return{id:o.id,dados:d}}
+function fromRow(r){return Object.assign({id:r.id},r.dados)}
+function aviso(t){var a=$("aviso");a.textContent=t||"";a.hidden=!t}
+function erro(e){aviso("Não foi possível salvar na nuvem: "+((e&&e.message)||e))}
+function read(){var o={};F.forEach(function(f){o[f]=$(f).value});return o}
+function fill(o){F.forEach(function(f){$(f).value=o?o[f]||"":""})}
+function setEdit(id){
+  delArmed=false;$("del").textContent="Excluir";
+  editId=id;var it=items.find(function(x){return x.id===id});
+  fill(it);$("save").textContent=id?"Salvar":"Adicionar";
+  $("cancel").hidden=$("del").hidden=!id;
+  if(id)window.scrollTo({top:0,behavior:"smooth"});
+}
+$("save").onclick=async function(){
+  var o=read();if(!o.nome.trim()){$("nome").focus();return}
+  var obj=Object.assign({id:editId||Date.now()+""},o);
+  $("save").disabled=true;
+  var r=await sb.from("itens").upsert(toRow(obj));
+  $("save").disabled=false;
+  if(r.error){erro(r.error);return}
+  aviso("");
+  if(editId){items=items.map(function(x){return x.id===editId?obj:x})}
+  else{items.unshift(obj)}
+  setEdit(null);render();
+};
+$("cancel").onclick=function(){setEdit(null)};
+$("del").onclick=async function(){
+  if(!delArmed){delArmed=true;$("del").textContent="Toque de novo para excluir";return}
+  var r=await sb.from("itens").delete().eq("id",editId);
+  if(r.error){erro(r.error);return}
+  aviso("");
+  items=items.filter(function(x){return x.id!==editId});setEdit(null);render();
+};
+function render(){
+  var sold=items.filter(function(i){return status(i)==="Vendido"});
+  var stock=items.filter(function(i){return status(i)!=="Vendido"});
+  var fat=0,cost=0;
+  sold.forEach(function(i){fat+=num(i.venda)+num(i.freteCob);cost+=num(i.compra)+num(i.frete)});
+  var lucro=fat-cost,parado=0,pot=0;
+  stock.forEach(function(i){parado+=num(i.compra)+num(i.frete);pot+=num(i.anuncio)||(num(i.compra)+num(i.frete))});
+  var roi=cost?lucro/cost*100:0;
+  $("sum").innerHTML=
+    '<div class="k"><small>Lucro realizado</small><b class="'+(lucro>=0?"pos":"neg")+'">'+money(lucro)+'</b></div>'+
+    '<div class="k"><small>ROI das vendas</small><b>'+roi.toFixed(0)+'%</b></div>'+
+    '<div class="k"><small>Faturado</small><b>'+money(fat)+'</b></div>'+
+    '<div class="k"><small>Parado em estoque ('+stock.length+')</small><b>'+money(parado)+'</b></div>'+
+    '<div class="k"><small>Potencial de lucro (estoque)</small><b class="pos">'+money(pot-parado)+'</b></div>'+
+    '<div class="k"><small>Patrimônio a preço de venda</small><b>'+money(pot)+'</b></div>';
+  var esc=function(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;")};
+  var P={};
+  sold.forEach(function(i){var p=i.plataforma||"Não informada";P[p]=P[p]||{n:0,l:0};P[p].n++;P[p].l+=num(i.venda)+num(i.freteCob)-num(i.compra)-num(i.frete)});
+  var ks=Object.keys(P).sort(function(a,b){return P[b].l-P[a].l});
+  var h="<b>Lucro por plataforma</b>";
+  if(!ks.length)h+='<div class="meta">Sem vendas ainda.</div>';
+  ks.forEach(function(k){h+='<div class="pl"><span>'+esc(k)+' · '+P[k].n+(P[k].n>1?' vendas':' venda')+'</span><b class="'+(P[k].l>=0?'pos':'neg')+'">'+money(P[k].l)+'</b></div>'});
+  $("plat").innerHTML=h;
+  var lucroDe=function(i){return num(i.venda)+num(i.freteCob)-num(i.compra)-num(i.frete)};
+  var M={};
+  sold.forEach(function(i){if(!i.dVenda)return;var k=i.dVenda.slice(0,7);M[k]=M[k]||{n:0,l:0};M[k].n++;M[k].l+=lucroDe(i)});
+  var mk=Object.keys(M).sort().reverse().slice(0,6);
+  var hm="<b>Lucro por mês</b>";
+  if(!mk.length)hm+='<div class="meta">Informe a data da venda para ver o lucro mensal.</div>';
+  mk.forEach(function(k){var p=k.split("-");hm+='<div class="pl"><span>'+p[1]+'/'+p[0]+' · '+M[k].n+(M[k].n>1?' vendas':' venda')+'</span><b class="'+(M[k].l>=0?'pos':'neg')+'">'+money(M[k].l)+'</b></div>'});
+  $("mes").innerHTML=hm;
+  var G={};
+  sold.forEach(function(i){var k=i.nome.trim().toLowerCase();G[k]=G[k]||{nome:i.nome.trim(),n:0,l:0,c:0};G[k].n++;G[k].l+=lucroDe(i);G[k].c+=num(i.compra)+num(i.frete)});
+  var gs=Object.keys(G).map(function(k){var g=G[k];g.m=g.c?g.l/g.c*100:0;return g});
+  var ht="<b>Mais vendidos</b>";
+  if(!gs.length)ht+='<div class="meta">Sem vendas ainda.</div>';
+  else{
+    gs.slice().sort(function(a,b){return b.n-a.n||b.l-a.l}).slice(0,3).forEach(function(g){ht+='<div class="pl"><span>'+esc(g.nome)+' · '+g.n+'x</span><b>'+money(g.l)+'</b></div>'});
+    ht+='<div style="margin-top:10px"><b>Maior margem</b></div>';
+    gs.slice().sort(function(a,b){return b.m-a.m}).slice(0,3).forEach(function(g){ht+='<div class="pl"><span>'+esc(g.nome)+'</span><b class="'+(g.m>=0?'pos':'neg')+'">'+g.m.toFixed(0)+'%</b></div>'});
+  }
+  $("top").innerHTML=ht;
+  var opts=[["todos","Todos"],["A caminho","A caminho"],["Em estoque","Em estoque"],["Anunciado","Anunciados"],["Vendido","Vendidos"]];
+  $("chips").innerHTML="";
+  opts.forEach(function(p){
+    var b=document.createElement("button");b.textContent=p[1];
+    if(filter===p[0])b.className="on";
+    b.onclick=function(){filter=p[0];render()};$("chips").appendChild(b);
+  });
+  var list=items.filter(function(i){return filter==="todos"||status(i)===filter});
+  var L=$("list");L.innerHTML="";
+  if(!list.length){L.innerHTML='<div class="empty">Nenhum item ainda.</div>';return}
+  list.forEach(function(i){
+    var st=status(i),c=document.createElement("div");c.className="card it";
+    var t=document.createElement("div");t.className="top";
+    var n=document.createElement("b");n.textContent=i.nome;
+    var g=document.createElement("span");g.className="tag";g.textContent=st;
+    t.appendChild(n);t.appendChild(g);c.appendChild(t);
+    var m=document.createElement("div");m.className="meta";
+    var parts=["Compra "+money(num(i.compra))];
+    if(num(i.frete))parts.push("Frete "+money(num(i.frete)));
+    if(i.anuncio)parts.push("Anúncio "+money(num(i.anuncio)));
+    if(i.venda)parts.push("Venda "+money(num(i.venda))+(i.plataforma?" ("+i.plataforma+")":""));
+    if(num(i.freteCob))parts.push("Frete cobrado "+money(num(i.freteCob)));
+    var l1=parts.join(" · ");
+    var d=[];
+    if(i.dCompra)d.push("comprado "+dt(i.dCompra));
+    if(i.dChegada)d.push("chegou "+dt(i.dChegada));
+    if(i.dAnuncio)d.push("anunciado "+dt(i.dAnuncio));
+    if(i.dVenda)d.push("vendido "+dt(i.dVenda));
+    m.textContent=l1;c.appendChild(m);
+    if(d.length){var m2=document.createElement("div");m2.className="meta";m2.textContent=d.join(" · ");c.appendChild(m2)}
+    var ex=[];
+    if(i.dCompra&&i.dChegada)ex.push("entrega: "+days(i.dCompra,i.dChegada)+" dias");
+    if(i.dAnuncio&&i.dVenda)ex.push("vendeu em "+days(i.dAnuncio,i.dVenda)+" dias");
+    else if(i.dAnuncio&&!i.dVenda)ex.push("anunciado há "+days(i.dAnuncio,new Date().toISOString().slice(0,10))+" dias");
+    if(ex.length){var m3=document.createElement("div");m3.className="meta";m3.textContent=ex.join(" · ");c.appendChild(m3)}
+    if(i.venda){
+      var lu=num(i.venda)+num(i.freteCob)-num(i.compra)-num(i.frete),p=document.createElement("div");
+      p.className="meta "+(lu>=0?"pos":"neg");p.textContent="Lucro: "+money(lu);c.appendChild(p);
+    }
+    if(i.comprador||i.contato){var mb=document.createElement("div");mb.className="meta";mb.textContent="Comprador: "+(i.comprador||"—")+(i.contato?" · "+i.contato:"");c.appendChild(mb)}
+    c.onclick=function(){setEdit(i.id)};
+    L.appendChild(c);
+  });
+}
+function sortProds(){prods.sort(function(a,b){return a.nome.localeCompare(b.nome)})}
+function renderP(){
+  var dl=$("listaProds");dl.innerHTML="";
+  prods.forEach(function(p){var o=document.createElement("option");o.value=p.nome;dl.appendChild(o)});
+  var L=$("pList");L.innerHTML="";
+  if(!prods.length){L.innerHTML='<div class="meta">Nenhum produto cadastrado.</div>';return}
+  prods.forEach(function(p){
+    var r=document.createElement("div");r.className="pl";
+    var s=document.createElement("span");
+    s.textContent=p.nome+(p.custo?" · custo "+money(num(p.custo)):"")+(p.preco?" · venda "+money(num(p.preco)):"");
+    s.style.cursor="pointer";
+    s.onclick=function(){pEdit=p.id;$("pnome").value=p.nome;$("pcusto").value=p.custo||"";$("ppreco").value=p.preco||"";$("pAdd").textContent="Salvar"};
+    var d=document.createElement("button");d.className="d";d.textContent="Excluir";
+    d.onclick=async function(){
+      var r2=await sb.from("produtos").delete().eq("id",p.id);
+      if(r2.error){erro(r2.error);return}
+      aviso("");prods=prods.filter(function(x){return x.id!==p.id});renderP();
+    };
+    r.appendChild(s);r.appendChild(d);L.appendChild(r);
+  });
+}
+$("pAdd").onclick=async function(){
+  var n=$("pnome").value.trim();if(!n){$("pnome").focus();return}
+  var o={id:pEdit||Date.now()+"",nome:n,custo:$("pcusto").value,preco:$("ppreco").value};
+  $("pAdd").disabled=true;
+  var r=await sb.from("produtos").upsert(toRow(o));
+  $("pAdd").disabled=false;
+  if(r.error){erro(r.error);return}
+  aviso("");
+  if(pEdit){prods=prods.map(function(x){return x.id===pEdit?o:x})}
+  else{prods.push(o)}
+  sortProds();pEdit=null;
+  $("pnome").value="";$("pcusto").value="";$("ppreco").value="";
+  $("pAdd").textContent="Cadastrar";renderP();
+};
+$("nome").addEventListener("input",function(){
+  if(editId)return;
+  var v=this.value.trim().toLowerCase();
+  var p=prods.find(function(x){return x.nome.toLowerCase()===v});
+  if(!p)return;
+  if(!$("compra").value&&p.custo)$("compra").value=p.custo;
+  if(!$("anuncio").value&&p.preco)$("anuncio").value=p.preco;
+});
+var th=null;try{th=localStorage.getItem("revenda_tema")}catch(e){}
+if(th)document.documentElement.setAttribute("data-theme",th);
+$("tema").onclick=function(){
+  var cur=document.documentElement.getAttribute("data-theme")||(matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light");
+  var nx=cur==="dark"?"light":"dark";document.documentElement.setAttribute("data-theme",nx);
+  try{localStorage.setItem("revenda_tema",nx)}catch(e){}
+};
+
+function mostrarLogin(){
+  $("app").hidden=true;$("sair").hidden=true;$("login").hidden=false;
+}
+async function iniciar(){
+  var s=await sb.auth.getSession();
+  if(!s.data.session){mostrarLogin();return}
+  $("login").hidden=true;$("app").hidden=false;$("sair").hidden=false;
+  var a=await sb.from("itens").select("id,dados").order("criado_em",{ascending:false});
+  var b=await sb.from("produtos").select("id,dados");
+  if(a.error||b.error){aviso("Não foi possível carregar os dados: "+(a.error||b.error).message)}
+  else aviso("");
+  items=(a.data||[]).map(fromRow);
+  prods=(b.data||[]).map(fromRow);sortProds();
+  render();renderP();
+}
+$("entrar").onclick=async function(){
+  $("loginMsg").textContent="";
+  $("entrar").disabled=true;
+  var r=await sb.auth.signInWithPassword({email:$("email").value.trim(),password:$("senha").value});
+  $("entrar").disabled=false;
+  if(r.error){$("loginMsg").textContent="E-mail ou senha incorretos.";return}
+  $("senha").value="";
+  iniciar();
+};
+$("senha").addEventListener("keydown",function(e){if(e.key==="Enter")$("entrar").click()});
+$("sair").onclick=async function(){
+  await sb.auth.signOut();items=[];prods=[];setEdit(null);mostrarLogin();
+};
+if(typeof supabase==="undefined"){
+  aviso("Não foi possível carregar o Supabase. Verifique a conexão e recarregue a página.");
+}else{
+  sb=supabase.createClient(SB_URL,SB_KEY);
+  iniciar();
+}
+</script>
+</body>
+</html>
