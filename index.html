@@ -1,12 +1,3 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Controle de Revenda</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
-<style>
 :root{--bg:#eef4f2;--card:#fff;--tx:#10231f;--mut:#5b716c;--bd:#d9e4e0;--brand:#0f766e;--brand-ink:#fff;--hdr1:#0f766e;--hdr2:#115e59;--bad:#b91c1c;
 --ok:#15803d;--okb:#dcfce7;--s1:#b45309;--s1b:#fef3c7;--s2:#1d4ed8;--s2b:#dbeafe;--s3:#6d28d9;--s3b:#ede9fe;--s4:#15803d;--s4b:#dcfce7;--s5:#be185d;--s5b:#fce7f3;
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
@@ -47,79 +38,32 @@ button.sm{padding:7px 12px;font-size:13px;border-radius:9px}
 .card{background:var(--card);border:1px solid var(--bd);border-radius:18px;padding:14px;margin-bottom:12px}
 .card h2{font-size:15px;margin:0 0 8px;font-weight:800}
 .pl{display:flex;justify-content:space-between;gap:10px;padding:8px 0;font-size:14px;border-top:1px solid var(--bd);align-items:center}
-.p</head>
-<body>
-<main>
-<div class="bar">
-  <div class="brand"><div class="logo" aria-hidden="true">📦</div><h1>Controle de Revenda</h1></div>
-  <div class="bt"><button class="s" id="tema">🌓</button><button class="s" id="sair" hidden>Sair</button></div>
-</div>
-<div class="aviso" id="aviso" hidden></div>
-
-<div class="card" id="login" hidden>
-<h2>Entrar</h2>
-<div class="grid">
-<label class="full">E-mail<input id="email" type="email" autocomplete="username" inputmode="email"></label>
-<label class="full">Senha<input id="senha" type="password" autocomplete="current-password"></label>
-</div>
-<div class="row"><button id="entrar">Entrar</button></div>
-<div class="meta" id="loginMsg"></div>
-</div>
-
-<div id="app" hidden>
-<nav class="tabs" id="tabs">
-<button data-tab="resumo">Resumo</button>
-<button data-tab="pedidos">Pedidos</button>
-<button data-tab="produtos">Produtos</button>
-</nav>
-
-<section id="v-resumo">
-<div id="hero"></div>
-<div class="sum" id="sum"></div>
-<div class="card" id="plat"></div>
-<div class="card" id="mes"></div>
-<div class="card" id="top"></div>
-</section>
-
-<section id="v-pedidos" hidden>
-<button class="novo" id="novo">+ Lançar pedido</button>
-<div class="card" id="formCard" hidden>
-<h2 id="formTitulo">Novo pedido</h2>
-<div class="grid">
-<label class="full">Produto<input id="nome" list="listaProds" placeholder="Escolha um produto cadastrado ou digite"><datalist id="listaProds"></datalist></label>
-<label>Quantidade<input id="qtd" type="number" inputmode="numeric" min="1" step="1" value="1"></label>
-<label>Valor de compra (cada) R$<input id="compra" type="number" inputmode="decimal" step="0.01"></label>
-<label>Frete da compra (total) R$<input id="frete" type="number" inputmode="decimal" step="0.01"></label>
-<label>Data da compra<input id="dCompra" type="date"></label>
-<label>Chegou em<input id="dChegada" type="date"></label>
-<label>Anúncio publicado em<input id="dAnuncio" type="date"></label>
-<label>Preço anunciado (cada) R$<input id="anuncio" type="number" inputmode="decimal" step="0.01"></label>
-<label>Valor vendido (cada) R$<input id="venda" type="number" inputmode="decimal" step="0.01"></label>
-<label>Frete cobrado do comprador (total) R$<input id="freteCob" type="number" inputmode="decimal" step="0.01"></label>
-<label>Data da venda<input id="dVenda" type="date"></label>
-<label>Vendido em<select id="plataforma"><option value="">—</option><option>Facebook Marketplace</option><option>Mercado Livre</option><option>Shopee</option><option>Venda direta</option></select></label>
-<label>Comprador<input id="comprador" placeholder="Nome"></label>
-<label class="full">Contato do comprador (opcional)<input id="contato" placeholder="WhatsApp, telefone ou perfil"></label>
-</div>
-<div class="prev" id="prev"></div>
-<div class="row">
-<button id="save">Adicionar</button>
-<button class="s" id="cancel">Cancelar</button>
-<button class="d" id="del" hidden>Excluir</button>
-</div>
-</div>
-<div class="chips" id="chips"></div>
-<div id="list"></div>
-</section>
-
-<section id="v-produtos" hidden>
-<div class="card">
-<h2 id="pTitulo">Cadastrar produto</h2>
-<p class="dica">Produtos salvos aqui aparecem ao lançar um pedido, já com custo e preço. Você só ajusta o que mudou.</p>
-<div class="grid">
-<label class="full">Nome do produto<input id="pnome" placeholder="Ex.: Fone Bluetooth"></label>
-<label>Custo usual (cada) R$<input id="pcusto" type="number" inputmode="decimal" step="<script>
-var SB_URL="https://jirpeeemufjnqnovvytr.supabase.co";
+.pl:first-of-type{border-top:0}
+.pl span{min-width:0;overflow-wrap:anywhere}
+.pl b{font-variant-numeric:tabular-nums;white-space:nowrap}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+label{display:block;font-size:12px;font-weight:600;color:var(--mut)}
+input,select{width:100%;margin-top:4px;padding:11px;border:1px solid var(--bd);border-radius:11px;background:var(--bg);color:var(--tx);font:inherit;min-width:0}
+.full{grid-column:1/-1}
+.row{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;align-items:center}
+.chips{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;padding-bottom:2px}
+.chips button{padding:7px 13px;font-size:13px;background:var(--card);color:var(--tx);border:1px solid var(--bd);white-space:nowrap;border-radius:99px}
+.chips button.on{background:var(--brand);color:var(--brand-ink);border-color:var(--brand)}
+.it{cursor:pointer}
+.top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.top b{font-weight:700;font-size:15px;overflow-wrap:anywhere}
+.un{display:inline-block;margin-left:6px;font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--s5b);color:var(--s5);vertical-align:1px}
+.tag{font-size:11px;font-weight:700;padding:3px 10px;border-radius:99px;white-space:nowrap}
+.st-caminho{background:var(--s1b);color:var(--s1)}.st-estoque{background:var(--s2b);color:var(--s2)}.st-anunciado{background:var(--s3b);color:var(--s3)}.st-vendido{background:var(--s4b);color:var(--s4)}
+.meta{color:var(--mut);font-size:13px;margin-top:6px}
+.lucro{display:inline-block;margin-top:8px;font-weight:800;font-size:13px;padding:4px 10px;border-radius:9px;font-variant-numeric:tabular-nums}
+.lucro.pos{background:var(--okb);color:var(--ok)}.lucro.neg{background:var(--s5b);color:var(--bad)}
+.pos{color:var(--ok)}.neg{color:var(--bad)}
+.empty{text-align:center;color:var(--mut);padding:28px 12px;background:var(--card);border:1px dashed var(--bd);border-radius:18px}
+.prev{margin-top:12px;padding:10px 12px;border-radius:12px;background:var(--s2b);color:var(--s2);font-size:13px;font-weight:600;display:flex;gap:6px 14px;flex-wrap:wrap}
+.aviso{color:var(--bad);font-size:13px;margin:0 0 12px;padding:10px 12px;border-radius:12px;background:var(--s5b)}
+.novo{width:100%;margin-bottom:12px;padding:14px;font-size:15px;border-radius:14px}
+.dica{font-size:12px;color:var(--mut);margin:0 0 10px}var SB_URL="https://jirpeeemufjnqnovvytr.supabase.co";
 var SB_KEY="sb_publishable_hJMO_LWPST5IN-Nh0U-JeQ_avQa2FO_";
 var sb=null;
 var items=[],prods=[],editId=null,filter="todos",pEdit=null,delArmed=false,tab="resumo",pDelArmed=null;
@@ -182,7 +126,23 @@ $("cancel").onclick=fecharForm;
 $("save").onclick=async function(){
   var o=read();if(!o.nome.trim()){$("nome").focus();return}
   o.qtd=String(qt(o));
-  varfunction render(){renderResumo();renderLista();renderP()}
+  var obj=Object.assign({id:editId||Date.now()+""},o);
+  $("save").disabled=true;
+  var r=await sb.from("itens").upsert(toRow(obj));
+  $("save").disabled=false;
+  if(r.error){erro(r.error);return}
+  aviso("");
+  if(editId){items=items.map(function(x){return x.id===editId?obj:x})}
+  else{items.unshift(obj)}
+  fecharForm();render();
+};
+$("del").onclick=async function(){
+  if(!delArmed){delArmed=true;$("del").textContent="Toque de novo para excluir";return}
+  var r=await sb.from("itens").delete().eq("id",editId);
+  if(r.error){erro(r.error);return}
+  aviso("");
+  items=items.filter(function(x){return x.id!==editId});fecharForm();render();
+};function render(){renderResumo();renderLista();renderP()}
 
 function renderResumo(){
   var sold=items.filter(function(i){return status(i)==="Vendido"});
@@ -271,7 +231,7 @@ function renderLista(){
     c.onclick=function(){abrirForm(i,i.id)};
     L.appendChild(c);
   });
-  }function sortProds(){prods.sort(function(a,b){return a.nome.localeCompare(b.nome)})}
+}function sortProds(){prods.sort(function(a,b){return a.nome.localeCompare(b.nome)})}
 function limparProd(){
   pEdit=null;$("pnome").value="";$("pcusto").value="";$("ppreco").value="";
   $("pAdd").textContent="Cadastrar";$("pCancel").hidden=true;$("pTitulo").textContent="Cadastrar produto";
@@ -368,7 +328,98 @@ if(typeof supabase==="undefined"){
 }else{
   sb=supabase.createClient(SB_URL,SB_KEY);
   iniciar();
-}
-</script>
+}<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Controle de Revenda</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+<div class="bar">
+  <div class="brand"><div class="logo" aria-hidden="true">📦</div><h1>Controle de Revenda</h1></div>
+  <div class="bt"><button class="s" id="tema">🌓</button><button class="s" id="sair" hidden>Sair</button></div>
+</div>
+<div class="aviso" id="aviso" hidden></div>
+
+<div class="card" id="login" hidden>
+<h2>Entrar</h2>
+<div class="grid">
+<label class="full">E-mail<input id="email" type="email" autocomplete="username" inputmode="email"></label>
+<label class="full">Senha<input id="senha" type="password" autocomplete="current-password"></label>
+</div>
+<div class="row"><button id="entrar">Entrar</button></div>
+<div class="meta" id="loginMsg"></div>
+</div>
+
+<div id="app" hidden>
+<nav class="tabs" id="tabs">
+<button data-tab="resumo">Resumo</button>
+<button data-tab="pedidos">Pedidos</button>
+<button data-tab="produtos">Produtos</button>
+</nav>
+
+<section id="v-resumo">
+<div id="hero"></div>
+<div class="sum" id="sum"></div>
+<div class="card" id="plat"></div>
+<div class="card" id="mes"></div>
+<div class="card" id="top"></div>
+</section>
+
+<section id="v-pedidos" hidden>
+<button class="novo" id="novo">+ Lançar pedido</button>
+<div class="card" id="formCard" hidden>
+<h2 id="formTitulo">Novo pedido</h2>
+<div class="grid">
+<label class="full">Produto<input id="nome" list="listaProds" placeholder="Escolha um produto cadastrado ou digite"><datalist id="listaProds"></datalist></label>
+<label>Quantidade<input id="qtd" type="number" inputmode="numeric" min="1" step="1" value="1"></label>
+<label>Valor de compra (cada) R$<input id="compra" type="number" inputmode="decimal" step="0.01"></label>
+<label>Frete da compra (total) R$<input id="frete" type="number" inputmode="decimal" step="0.01"></label>
+<label>Data da compra<input id="dCompra" type="date"></label>
+<label>Chegou em<input id="dChegada" type="date"></label>
+<label>Anúncio publicado em<input id="dAnuncio" type="date"></label>
+<label>Preço anunciado (cada) R$<input id="anuncio" type="number" inputmode="decimal" step="0.01"></label>
+<label>Valor vendido (cada) R$<input id="venda" type="number" inputmode="decimal" step="0.01"></label>
+<label>Frete cobrado do comprador (total) R$<input id="freteCob" type="number" inputmode="decimal" step="0.01"></label>
+<label>Data da venda<input id="dVenda" type="date"></label>
+<label>Vendido em<select id="plataforma"><option value="">—</option><option>Facebook Marketplace</option><option>Mercado Livre</option><option>Shopee</option><option>Venda direta</option></select></label>
+<label>Comprador<input id="comprador" placeholder="Nome"></label>
+<label class="full">Contato do comprador (opcional)<input id="contato" placeholder="WhatsApp, telefone ou perfil"></label>
+</div>
+<div class="prev" id="prev"></div>
+<div class="row">
+<button id="save">Adicionar</button>
+<button class="s" id="cancel">Cancelar</button>
+<button class="d" id="del" hidden>Excluir</button>
+</div>
+</div>
+<div class="chips" id="chips"></div>
+<div id="list"></div>
+</section>
+
+<section id="v-produtos" hidden>
+<div class="card">
+<h2 id="pTitulo">Cadastrar produto</h2>
+<p class="dica">Produtos salvos aqui aparecem ao lançar um pedido, já com custo e preço. Você só ajusta o que mudou.</p>
+<div class="grid">
+<label class="full">Nome do produto<input id="pnome" placeholder="Ex.: Fone Bluetooth"></label>
+<label>Custo usual (cada) R$<input id="pcusto" type="number" inputmode="decimal" step="0.01"></label>
+<label>Preço de venda (cada) R$<input id="ppreco" type="number" inputmode="decimal" step="0.01"></label>
+</div>
+<div class="row"><button id="pAdd">Cadastrar</button><button class="s" id="pCancel" hidden>Cancelar</button></div>
+</div>
+<div class="card"><h2>Meus produtos</h2><div id="pList"></div></div>
+</section>
+</div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="js1.js"></script>
+<script src="js2.js"></script>
+<script src="js3.js"></script>
 </body>
 </html>
