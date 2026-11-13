@@ -84,6 +84,24 @@ input,select{width:100%;margin-top:4px;padding:11px;border:1px solid var(--bd);b
 .foto label.btn{display:inline-block;font-weight:600;font-size:13px;padding:7px 12px;border-radius:9px;background:var(--card);color:var(--tx);border:1px solid var(--bd);cursor:pointer;margin:0}
 .lb{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.82);display:grid;place-items:center;padding:20px}
 .lb img{max-width:100%;max-height:100%;border-radius:14px}
+.pc{display:flex;gap:12px;align-items:flex-start}
+.pb{flex:1;min-width:0}
+.pimg{width:76px;height:76px;border-radius:14px;object-fit:cover;flex:none;border:1px solid var(--bd);background:var(--bg);cursor:zoom-in;display:block}
+.pimg.v{display:grid;place-items:center;font-size:28px;cursor:default;background:linear-gradient(135deg,var(--s2b),var(--s4b))}
+.sec{font-size:15px;font-weight:800;margin:18px 2px 10px}
+.sec span{color:var(--mut);font-weight:600}
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.prod{background:var(--card);border:1px solid var(--bd);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.prod .pi{width:100%;aspect-ratio:1/1;object-fit:cover;display:block;background:var(--bg);cursor:zoom-in}
+.prod .pi.vazio{display:grid;place-items:center;font-size:42px;cursor:default;background:linear-gradient(135deg,var(--s2b),var(--s4b))}
+.prod .pbody{padding:10px 12px 12px;display:flex;flex-direction:column;gap:4px;flex:1}
+.prod .pn{font-weight:700;font-size:14px;line-height:1.25;overflow-wrap:anywhere}
+.prod .pp{font-size:12px;color:var(--mut)}
+.prod .pm{font-size:12px;font-weight:800;padding:2px 9px;border-radius:99px;align-self:flex-start;margin-top:2px;font-variant-numeric:tabular-nums}
+.prod .pm.pos{background:var(--okb)}.prod .pm.neg{background:var(--s5b)}
+.prod .pa{display:flex;gap:4px;margin-top:auto;padding-top:10px;flex-wrap:wrap}
+.prod .pa .lan{flex:1 1 100%}
+.prod .pa .sm{flex:1 1 auto}
 </style>
 </head>
 <body>
@@ -126,6 +144,15 @@ input,select{width:100%;margin-top:4px;padding:11px;border:1px solid var(--bd);b
           <label for="nome">Produto</label>
           <input id="nome" type="text" list="listaProds" autocomplete="off" placeholder="Ex.: Fone Bluetooth">
           <datalist id="listaProds"></datalist>
+        </div>
+        <div class="full">
+          <label for="oFotoIn">Foto (opcional)</label>
+          <div class="foto" style="margin-top:6px">
+            <div id="oFotoBox"></div>
+            <label class="btn" for="oFotoIn">📷 Adicionar foto</label>
+            <input id="oFotoIn" type="file" accept="image/*">
+            <button class="d sm" id="oFotoRem" type="button" hidden>Remover foto</button>
+          </div>
         </div>
         <div>
           <label for="qtd">Quantidade</label>
@@ -258,10 +285,8 @@ input,select{width:100%;margin-top:4px;padding:11px;border:1px solid var(--bd);b
         <button class="s" id="pCancel" type="button" hidden>Cancelar</button>
       </div>
     </div>
-    <div class="card">
-      <h2>Produtos cadastrados</h2>
-      <div id="pList"></div>
-    </div>
+    <h2 class="sec">Produtos cadastrados <span id="pCount"></span></h2>
+    <div class="pgrid" id="pList"></div>
   </section>
 </main>
 
@@ -271,7 +296,7 @@ var SB_URL="https://jirpeeemufjnqnovvytr.supabase.co";
 var SB_KEY="sb_publishable_hJMO_LWPST5IN-Nh0U-JeQ_avQa2FO_";
 var sb=null;
 var items=[],prods=[],editId=null,filter="todos",pEdit=null,delArmed=false,tab="resumo",pDelArmed=null;
-var fBase="dCompra",fMes="",fDia="",pFoto="";
+var fBase="dCompra",fMes="",fDia="",pFoto="",oFt="";
 var $=function(i){return document.getElementById(i)};
 var F=["nome","qtd","compra","frete","dCompra","dChegada","dAnuncio","anuncio","venda","freteCob","dVenda","plataforma","comprador","contato"];
 var money=function(n){return (n||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"})};
@@ -291,7 +316,7 @@ function fromRow(r){return Object.assign({id:r.id},r.dados)}
 function aviso(t){var a=$("aviso");a.textContent=t||"";a.hidden=!t}
 function erro(e){aviso("Não foi possível salvar na nuvem: "+((e&&e.message)||e))}
 function read(){var o={};F.forEach(function(f){o[f]=$(f).value});return o}
-function fill(o){F.forEach(function(f){$(f).value=o?o[f]||"":""});if(!$("qtd").value)$("qtd").value="1"}
+function fill(o){F.forEach(function(f){$(f).value=o?o[f]||"":""});if(!$("qtd").value)$("qtd").value="1";oFt=o?o.foto||"":"";mostrarFotoO()}
 
 function setTab(t){
   tab=t;
@@ -330,7 +355,7 @@ $("novo").onclick=function(){abrirForm(null,null)};
 $("cancel").onclick=fecharForm;
 $("save").onclick=async function(){
   var o=read();if(!o.nome.trim()){$("nome").focus();return}
-  o.qtd=String(qt(o));
+  o.qtd=String(qt(o));o.foto=oFt;
   var obj=Object.assign({id:editId||Date.now()+""},o);
   $("save").disabled=true;
   var r=await sb.from("itens").upsert(toRow(obj));
@@ -408,40 +433,43 @@ function renderLista(){
   if(!list.length){L.innerHTML=ativo?'<div class="empty">Nenhum pedido neste período.</div>':'<div class="empty">Nenhum pedido aqui ainda.<br>Toque em “Lançar pedido” para começar.</div>';return}
   list.forEach(function(i){
     var st=status(i),q=qt(i),c=document.createElement("div");c.className="card it";
+    var wrap=document.createElement("div");wrap.className="pc";
+    var pf=i.foto||fotoDe(i.nome),th;
+    if(pf){th=document.createElement("img");th.className="pimg";th.src=pf;th.alt="";th.onclick=function(e){e.stopPropagation();abrirFoto(pf)}}
+    else{th=document.createElement("div");th.className="pimg v";th.textContent="📦"}
+    wrap.appendChild(th);
+    var bd=document.createElement("div");bd.className="pb";
     var t=document.createElement("div");t.className="top";
     var n=document.createElement("b");n.textContent=i.nome;
     if(q>1){var u=document.createElement("span");u.className="un";u.textContent=q+" un";n.appendChild(u)}
     var g=document.createElement("span");g.className="tag "+stClass(st);g.textContent=st;
-    var wr=document.createElement("div");wr.className="nm";
-    var pf=fotoDe(i.nome);
-    if(pf){var im=document.createElement("img");im.className="th";im.src=pf;im.alt="";im.onclick=function(e){e.stopPropagation();abrirFoto(pf)};wr.appendChild(im)}
-    wr.appendChild(n);
-    t.appendChild(wr);t.appendChild(g);c.appendChild(t);
+    t.appendChild(n);t.appendChild(g);bd.appendChild(t);
     var m=document.createElement("div");m.className="meta";
     var parts=["Compra "+(q>1?q+"× "+money(num(i.compra)):money(num(i.compra)))];
     if(num(i.frete))parts.push("Frete "+money(num(i.frete)));
     if(i.anuncio)parts.push("Anúncio "+money(num(i.anuncio)));
     if(i.venda)parts.push("Venda "+(q>1?q+"× ":"")+money(num(i.venda))+(i.plataforma?" ("+i.plataforma+")":""));
     if(num(i.freteCob))parts.push("Frete cobrado "+money(num(i.freteCob)));
-    m.textContent=parts.join(" · ");c.appendChild(m);
+    m.textContent=parts.join(" · ");bd.appendChild(m);
     var d=[];
     if(i.dCompra)d.push("comprado "+dt(i.dCompra));
     if(i.dChegada)d.push("chegou "+dt(i.dChegada));
     if(i.dAnuncio)d.push("anunciado "+dt(i.dAnuncio));
     if(i.dVenda)d.push("vendido "+dt(i.dVenda));
-    if(d.length){var m2=document.createElement("div");m2.className="meta";m2.textContent=d.join(" · ");c.appendChild(m2)}
+    if(d.length){var m2=document.createElement("div");m2.className="meta";m2.textContent=d.join(" · ");bd.appendChild(m2)}
     var ex=[];
     if(i.dCompra&&i.dChegada)ex.push("entrega: "+days(i.dCompra,i.dChegada)+" dias");
     if(i.dAnuncio&&i.dVenda)ex.push("vendeu em "+days(i.dAnuncio,i.dVenda)+" dias");
     else if(i.dAnuncio&&!i.dVenda)ex.push("anunciado há "+days(i.dAnuncio,hoje())+" dias");
-    if(ex.length){var m3=document.createElement("div");m3.className="meta";m3.textContent=ex.join(" · ");c.appendChild(m3)}
-    if(i.comprador||i.contato){var mb=document.createElement("div");mb.className="meta";mb.textContent="Comprador: "+(i.comprador||"—")+(i.contato?" · "+i.contato:"");c.appendChild(mb)}
+    if(ex.length){var m3=document.createElement("div");m3.className="meta";m3.textContent=ex.join(" · ");bd.appendChild(m3)}
+    if(i.comprador||i.contato){var mb=document.createElement("div");mb.className="meta";mb.textContent="Comprador: "+(i.comprador||"—")+(i.contato?" · "+i.contato:"");bd.appendChild(mb)}
     var rw=document.createElement("div");rw.className="row";rw.style.justifyContent="space-between";
     if(i.venda){var lu=lucroDe(i),p=document.createElement("span");p.className="lucro "+(lu>=0?"pos":"neg");p.textContent="Lucro "+money(lu);rw.appendChild(p)}
     else rw.appendChild(document.createElement("span"));
     var rp=document.createElement("button");rp.className="s sm";rp.textContent="↻ Repetir pedido";
-    rp.onclick=function(e){e.stopPropagation();abrirForm({nome:i.nome,qtd:i.qtd,compra:i.compra,frete:i.frete,anuncio:i.anuncio,plataforma:""},null)};
-    rw.appendChild(rp);c.appendChild(rw);
+    rp.onclick=function(e){e.stopPropagation();abrirForm({nome:i.nome,qtd:i.qtd,compra:i.compra,frete:i.frete,anuncio:i.anuncio,plataforma:"",foto:i.foto||""},null)};
+    rw.appendChild(rp);bd.appendChild(rw);
+    wrap.appendChild(bd);c.appendChild(wrap);
     c.onclick=function(){abrirForm(i,i.id)};
     L.appendChild(c);
   });
@@ -456,21 +484,28 @@ $("pCancel").onclick=limparProd;
 function renderP(){
   var dl=$("listaProds");dl.innerHTML="";
   prods.forEach(function(p){var o=document.createElement("option");o.value=p.nome;dl.appendChild(o)});
+  $("pCount").textContent=prods.length?"("+prods.length+")":"";
   var L=$("pList");L.innerHTML="";
-  if(!prods.length){L.innerHTML='<div class="meta">Nenhum produto cadastrado ainda.</div>';return}
+  if(!prods.length){L.innerHTML='<div class="empty" style="grid-column:1/-1">Nenhum produto cadastrado ainda.<br>Cadastre acima para lançar pedidos mais rápido.</div>';return}
   prods.forEach(function(p){
-    var box=document.createElement("div");box.className="pl";box.style.flexWrap="wrap";
-    var s=document.createElement("span");s.style.flex="1 1 160px";
-    var wp=document.createElement("div");wp.className="nm";
-    if(p.foto){var im=document.createElement("img");im.className="th";im.src=p.foto;im.alt="";im.onclick=function(){abrirFoto(p.foto)};wp.appendChild(im)}
-    var tx=document.createElement("div");
-    var nm=document.createElement("b");nm.textContent=p.nome;tx.appendChild(nm);
-    var mt=document.createElement("div");mt.className="meta";mt.style.marginTop="2px";
-    mt.textContent=(p.custo?"Custo "+money(num(p.custo)):"Sem custo")+(p.preco?" · Venda "+money(num(p.preco)):"");
-    tx.appendChild(mt);wp.appendChild(tx);s.appendChild(wp);
-    var bt=document.createElement("div");bt.style.display="flex";bt.style.gap="4px";
-    var l=document.createElement("button");l.className="sm";l.textContent="Lançar";
-    l.onclick=function(){abrirForm({nome:p.nome,compra:p.custo,anuncio:p.preco,qtd:"1"},null)};
+    var box=document.createElement("div");box.className="prod";
+    var im;
+    if(p.foto){im=document.createElement("img");im.className="pi";im.src=p.foto;im.alt=p.nome;im.onclick=function(){abrirFoto(p.foto)}}
+    else{im=document.createElement("div");im.className="pi vazio";im.textContent="📦"}
+    box.appendChild(im);
+    var b=document.createElement("div");b.className="pbody";
+    var nm=document.createElement("div");nm.className="pn";nm.textContent=p.nome;b.appendChild(nm);
+    var pp=document.createElement("div");pp.className="pp";
+    pp.textContent=(p.custo?"Custo "+money(num(p.custo)):"Sem custo")+(p.preco?" · Venda "+money(num(p.preco)):"");
+    b.appendChild(pp);
+    if(num(p.custo)&&num(p.preco)){
+      var lu=num(p.preco)-num(p.custo),mg=lu/num(p.custo)*100;
+      var ch=document.createElement("span");ch.className="pm "+(lu>=0?"pos":"neg");
+      ch.textContent="Lucro "+money(lu)+" · "+mg.toFixed(0)+"%";b.appendChild(ch);
+    }
+    var ac=document.createElement("div");ac.className="pa";
+    var l=document.createElement("button");l.className="sm lan";l.textContent="Lançar pedido";
+    l.onclick=function(){abrirForm({nome:p.nome,compra:p.custo,anuncio:p.preco,qtd:"1",foto:p.foto||""},null)};
     var e=document.createElement("button");e.className="s sm";e.textContent="Editar";
     e.onclick=function(){pEdit=p.id;$("pnome").value=p.nome;$("pcusto").value=p.custo||"";$("ppreco").value=p.preco||"";pFoto=p.foto||"";mostrarFoto();$("pAdd").textContent="Salvar";$("pCancel").hidden=false;$("pTitulo").textContent="Editar produto";window.scrollTo({top:0,behavior:"smooth"})};
     var d=document.createElement("button");d.className="d sm";d.textContent=pDelArmed===p.id?"Confirmar?":"Excluir";
@@ -480,8 +515,8 @@ function renderP(){
       if(r2.error){erro(r2.error);return}
       aviso("");pDelArmed=null;prods=prods.filter(function(x){return x.id!==p.id});renderP();
     };
-    bt.appendChild(l);bt.appendChild(e);bt.appendChild(d);
-    box.appendChild(s);box.appendChild(bt);L.appendChild(box);
+    ac.appendChild(l);ac.appendChild(e);ac.appendChild(d);
+    b.appendChild(ac);box.appendChild(b);L.appendChild(box);
   });
 }
 $("pAdd").onclick=async function(){
@@ -503,6 +538,7 @@ $("nome").addEventListener("input",function(){
   if(!p)return;
   if(!$("compra").value&&p.custo)$("compra").value=p.custo;
   if(!$("anuncio").value&&p.preco)$("anuncio").value=p.preco;
+  if(!oFt&&p.foto){oFt=p.foto;mostrarFotoO()}
   preview();
 });
 
@@ -527,7 +563,7 @@ function mostrarFoto(){
   else{var ph=document.createElement("div");ph.className="ph";ph.textContent="📦";b.appendChild(ph)}
   $("pFotoRem").hidden=!pFoto;
 }
-function lerFoto(file){
+function lerFoto(file,max){
   return new Promise(function(res,rej){
     var fr=new FileReader();
     fr.onerror=function(){rej(new Error("Não foi possível ler a imagem."))};
@@ -535,7 +571,7 @@ function lerFoto(file){
       var im=new Image();
       im.onerror=function(){rej(new Error("Imagem inválida."))};
       im.onload=function(){
-        var M=480,k=Math.min(1,M/Math.max(im.width,im.height)),w=Math.round(im.width*k),h=Math.round(im.height*k);
+        var M=max||480,k=Math.min(1,M/Math.max(im.width,im.height)),w=Math.round(im.width*k),h=Math.round(im.height*k);
         var cv=document.createElement("canvas");cv.width=w;cv.height=h;
         cv.getContext("2d").drawImage(im,0,0,w,h);
         res(cv.toDataURL("image/jpeg",.72));
@@ -559,6 +595,21 @@ function abrirFoto(src){
   document.body.appendChild(d);
 }
 mostrarFoto();
+
+function mostrarFotoO(){
+  var b=$("oFotoBox");b.innerHTML="";
+  if(oFt){var im=document.createElement("img");im.className="th";im.src=oFt;im.alt="Foto do pedido";b.appendChild(im)}
+  else{var ph=document.createElement("div");ph.className="ph";ph.textContent="📦";b.appendChild(ph)}
+  $("oFotoRem").hidden=!oFt;
+}
+$("oFotoIn").onchange=async function(){
+  var f=this.files&&this.files[0];this.value="";
+  if(!f)return;
+  try{oFt=await lerFoto(f,420);aviso("");mostrarFotoO()}
+  catch(e){aviso((e&&e.message)||"Não foi possível usar essa imagem.")}
+};
+$("oFotoRem").onclick=function(){oFt="";mostrarFotoO()};
+mostrarFotoO();
 
 $("tema").onclick=function(){
   var r=document.documentElement,a=r.getAttribute("data-theme");
