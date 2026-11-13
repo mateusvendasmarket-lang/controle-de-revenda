@@ -1,3 +1,14 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Controle de Revenda</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script>try{var t=localStorage.getItem("tema");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<style>
 :root{--bg:#eef4f2;--card:#fff;--tx:#10231f;--mut:#5b716c;--bd:#d9e4e0;--brand:#0f766e;--brand-ink:#fff;--hdr1:#0f766e;--hdr2:#115e59;--bad:#b91c1c;
 --ok:#15803d;--okb:#dcfce7;--s1:#b45309;--s1b:#fef3c7;--s2:#1d4ed8;--s2b:#dbeafe;--s3:#6d28d9;--s3b:#ede9fe;--s4:#15803d;--s4b:#dcfce7;--s5:#be185d;--s5b:#fce7f3;
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
@@ -63,10 +74,204 @@ input,select{width:100%;margin-top:4px;padding:11px;border:1px solid var(--bd);b
 .prev{margin-top:12px;padding:10px 12px;border-radius:12px;background:var(--s2b);color:var(--s2);font-size:13px;font-weight:600;display:flex;gap:6px 14px;flex-wrap:wrap}
 .aviso{color:var(--bad);font-size:13px;margin:0 0 12px;padding:10px 12px;border-radius:12px;background:var(--s5b)}
 .novo{width:100%;margin-bottom:12px;padding:14px;font-size:15px;border-radius:14px}
-.dica{font-size:12px;color:var(--mut);margin:0 0 10px}var SB_URL="https://jirpeeemufjnqnovvytr.supabase.co";
+.dica{font-size:12px;color:var(--mut);margin:0 0 10px}
+.th{width:44px;height:44px;border-radius:10px;object-fit:cover;flex:none;border:1px solid var(--bd);background:var(--bg);cursor:zoom-in}
+.nm{display:flex;align-items:center;gap:10px;min-width:0}
+.foto{display:flex;align-items:center;gap:12px;margin-top:12px;flex-wrap:wrap}
+.foto .th{width:72px;height:72px;border-radius:12px}
+.foto .ph{width:72px;height:72px;border-radius:12px;border:1px dashed var(--bd);display:grid;place-items:center;font-size:24px;color:var(--mut)}
+.foto input[type=file]{display:none}
+.foto label.btn{display:inline-block;font-weight:600;font-size:13px;padding:7px 12px;border-radius:9px;background:var(--card);color:var(--tx);border:1px solid var(--bd);cursor:pointer;margin:0}
+.lb{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.82);display:grid;place-items:center;padding:20px}
+.lb img{max-width:100%;max-height:100%;border-radius:14px}
+</style>
+</head>
+<body>
+<main>
+  <div class="bar">
+    <div class="brand">
+      <div class="logo">📦</div>
+      <h1>Controle de Revenda</h1>
+    </div>
+    <div class="bt">
+      <button class="s" id="tema" type="button" aria-label="Alternar tema claro/escuro">🌓</button>
+    </div>
+  </div>
+
+  <div class="aviso" id="aviso" hidden></div>
+
+  <div class="tabs" id="tabs">
+    <button type="button" data-tab="resumo" class="on">Resumo</button>
+    <button type="button" data-tab="pedidos">Pedidos</button>
+    <button type="button" data-tab="produtos">Produtos</button>
+  </div>
+
+  <!-- RESUMO -->
+  <section id="v-resumo">
+    <div id="hero"></div>
+    <div class="sum" id="sum"></div>
+    <div class="card" id="plat"></div>
+    <div class="card" id="mes"></div>
+    <div class="card" id="top"></div>
+  </section>
+
+  <!-- PEDIDOS -->
+  <section id="v-pedidos" hidden>
+    <button class="novo" id="novo" type="button">＋ Lançar pedido</button>
+
+    <div class="card" id="formCard" hidden>
+      <h2 id="formTitulo">Novo pedido</h2>
+      <div class="grid">
+        <div class="full">
+          <label for="nome">Produto</label>
+          <input id="nome" type="text" list="listaProds" autocomplete="off" placeholder="Ex.: Fone Bluetooth">
+          <datalist id="listaProds"></datalist>
+        </div>
+        <div>
+          <label for="qtd">Quantidade</label>
+          <input id="qtd" type="number" min="1" step="1" inputmode="numeric" value="1">
+        </div>
+        <div>
+          <label for="compra">Compra (R$ por unidade)</label>
+          <input id="compra" type="number" min="0" step="0.01" inputmode="decimal">
+        </div>
+        <div>
+          <label for="frete">Frete pago (R$)</label>
+          <input id="frete" type="number" min="0" step="0.01" inputmode="decimal">
+        </div>
+        <div>
+          <label for="dCompra">Data da compra</label>
+          <input id="dCompra" type="date">
+        </div>
+        <div>
+          <label for="dChegada">Data que chegou</label>
+          <input id="dChegada" type="date">
+        </div>
+        <div>
+          <label for="dAnuncio">Data do anúncio</label>
+          <input id="dAnuncio" type="date">
+        </div>
+        <div>
+          <label for="anuncio">Preço anunciado (R$ por unidade)</label>
+          <input id="anuncio" type="number" min="0" step="0.01" inputmode="decimal">
+        </div>
+        <div>
+          <label for="venda">Venda (R$ por unidade)</label>
+          <input id="venda" type="number" min="0" step="0.01" inputmode="decimal">
+        </div>
+        <div>
+          <label for="freteCob">Frete cobrado (R$)</label>
+          <input id="freteCob" type="number" min="0" step="0.01" inputmode="decimal">
+        </div>
+        <div>
+          <label for="dVenda">Data da venda</label>
+          <input id="dVenda" type="date">
+        </div>
+        <div>
+          <label for="plataforma">Plataforma</label>
+          <input id="plataforma" type="text" list="listaPlat" autocomplete="off" placeholder="Ex.: Mercado Livre">
+          <datalist id="listaPlat">
+            <option value="Mercado Livre"></option>
+            <option value="Shopee"></option>
+            <option value="OLX"></option>
+            <option value="Facebook"></option>
+            <option value="Instagram"></option>
+            <option value="WhatsApp"></option>
+            <option value="Presencial"></option>
+          </datalist>
+        </div>
+        <div>
+          <label for="comprador">Comprador</label>
+          <input id="comprador" type="text" autocomplete="off">
+        </div>
+        <div>
+          <label for="contato">Contato</label>
+          <input id="contato" type="text" autocomplete="off">
+        </div>
+      </div>
+      <div class="prev" id="prev"></div>
+      <div class="row">
+        <button id="save" type="button">Adicionar</button>
+        <button class="s" id="cancel" type="button">Cancelar</button>
+        <button class="d" id="del" type="button" hidden>Excluir</button>
+      </div>
+    </div>
+
+    <div class="chips" id="chips"></div>
+
+    <div class="card" id="filtros">
+      <div class="grid">
+        <div class="full">
+          <label for="fBase">Filtrar pela data de</label>
+          <select id="fBase">
+            <option value="dCompra">Compra</option>
+            <option value="dVenda">Venda</option>
+            <option value="dAnuncio">Anúncio</option>
+            <option value="dChegada">Chegada</option>
+          </select>
+        </div>
+        <div>
+          <label for="fMes">Mês</label>
+          <input id="fMes" type="month">
+        </div>
+        <div>
+          <label for="fDia">Dia</label>
+          <input id="fDia" type="date">
+        </div>
+      </div>
+      <div class="row">
+        <button class="s sm" id="fLimpar" type="button">Limpar filtros</button>
+        <span class="meta" id="fRes" style="margin:0"></span>
+      </div>
+    </div>
+
+    <div id="list"></div>
+  </section>
+
+  <!-- PRODUTOS -->
+  <section id="v-produtos" hidden>
+    <div class="card">
+      <h2 id="pTitulo">Cadastrar produto</h2>
+      <p class="dica">Produtos cadastrados preenchem custo e preço automaticamente ao lançar um pedido.</p>
+      <div class="grid">
+        <div class="full">
+          <label for="pnome">Nome do produto</label>
+          <input id="pnome" type="text" autocomplete="off">
+        </div>
+        <div>
+          <label for="pcusto">Custo (R$)</label>
+          <input id="pcusto" type="number" min="0" step="0.01" inputmode="decimal">
+        </div>
+        <div>
+          <label for="ppreco">Preço de venda (R$)</label>
+          <input id="ppreco" type="number" min="0" step="0.01" inputmode="decimal">
+        </div>
+      </div>
+      <div class="foto">
+        <div id="pFotoBox"></div>
+        <label class="btn" for="pFoto">📷 Foto</label>
+        <input id="pFoto" type="file" accept="image/*">
+        <button class="d sm" id="pFotoRem" type="button" hidden>Remover foto</button>
+      </div>
+      <div class="row">
+        <button id="pAdd" type="button">Cadastrar</button>
+        <button class="s" id="pCancel" type="button" hidden>Cancelar</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Produtos cadastrados</h2>
+      <div id="pList"></div>
+    </div>
+  </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+var SB_URL="https://jirpeeemufjnqnovvytr.supabase.co";
 var SB_KEY="sb_publishable_hJMO_LWPST5IN-Nh0U-JeQ_avQa2FO_";
 var sb=null;
 var items=[],prods=[],editId=null,filter="todos",pEdit=null,delArmed=false,tab="resumo",pDelArmed=null;
+var fBase="dCompra",fMes="",fDia="",pFoto="";
 var $=function(i){return document.getElementById(i)};
 var F=["nome","qtd","compra","frete","dCompra","dChegada","dAnuncio","anuncio","venda","freteCob","dVenda","plataforma","comprador","contato"];
 var money=function(n){return (n||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"})};
@@ -142,7 +347,9 @@ $("del").onclick=async function(){
   if(r.error){erro(r.error);return}
   aviso("");
   items=items.filter(function(x){return x.id!==editId});fecharForm();render();
-};function render(){renderResumo();renderLista();renderP()}
+};
+
+function render(){renderResumo();renderLista();renderP()}
 
 function renderResumo(){
   var sold=items.filter(function(i){return status(i)==="Vendido"});
@@ -193,16 +400,23 @@ function renderLista(){
     if(filter===p[0])b.className="on";
     b.onclick=function(){filter=p[0];renderLista()};$("chips").appendChild(b);
   });
-  var list=items.filter(function(i){return filter==="todos"||status(i)===filter});
+  var list=items.filter(function(i){return(filter==="todos"||status(i)===filter)&&passaData(i)});
+  var ativo=!!(fMes||fDia),lt=0;
+  list.forEach(function(i){if(status(i)==="Vendido")lt+=lucroDe(i)});
+  $("fRes").textContent=ativo?list.length+(list.length===1?" pedido":" pedidos")+(lt?" · Lucro "+money(lt):""):"";
   var L=$("list");L.innerHTML="";
-  if(!list.length){L.innerHTML='<div class="empty">Nenhum pedido aqui ainda.<br>Toque em “Lançar pedido” para começar.</div>';return}
+  if(!list.length){L.innerHTML=ativo?'<div class="empty">Nenhum pedido neste período.</div>':'<div class="empty">Nenhum pedido aqui ainda.<br>Toque em “Lançar pedido” para começar.</div>';return}
   list.forEach(function(i){
     var st=status(i),q=qt(i),c=document.createElement("div");c.className="card it";
     var t=document.createElement("div");t.className="top";
     var n=document.createElement("b");n.textContent=i.nome;
     if(q>1){var u=document.createElement("span");u.className="un";u.textContent=q+" un";n.appendChild(u)}
     var g=document.createElement("span");g.className="tag "+stClass(st);g.textContent=st;
-    t.appendChild(n);t.appendChild(g);c.appendChild(t);
+    var wr=document.createElement("div");wr.className="nm";
+    var pf=fotoDe(i.nome);
+    if(pf){var im=document.createElement("img");im.className="th";im.src=pf;im.alt="";im.onclick=function(e){e.stopPropagation();abrirFoto(pf)};wr.appendChild(im)}
+    wr.appendChild(n);
+    t.appendChild(wr);t.appendChild(g);c.appendChild(t);
     var m=document.createElement("div");m.className="meta";
     var parts=["Compra "+(q>1?q+"× "+money(num(i.compra)):money(num(i.compra)))];
     if(num(i.frete))parts.push("Frete "+money(num(i.frete)));
@@ -231,9 +445,11 @@ function renderLista(){
     c.onclick=function(){abrirForm(i,i.id)};
     L.appendChild(c);
   });
-}function sortProds(){prods.sort(function(a,b){return a.nome.localeCompare(b.nome)})}
+}
+
+function sortProds(){prods.sort(function(a,b){return a.nome.localeCompare(b.nome)})}
 function limparProd(){
-  pEdit=null;$("pnome").value="";$("pcusto").value="";$("ppreco").value="";
+  pEdit=null;$("pnome").value="";$("pcusto").value="";$("ppreco").value="";pFoto="";mostrarFoto();
   $("pAdd").textContent="Cadastrar";$("pCancel").hidden=true;$("pTitulo").textContent="Cadastrar produto";
 }
 $("pCancel").onclick=limparProd;
@@ -245,15 +461,18 @@ function renderP(){
   prods.forEach(function(p){
     var box=document.createElement("div");box.className="pl";box.style.flexWrap="wrap";
     var s=document.createElement("span");s.style.flex="1 1 160px";
-    var nm=document.createElement("b");nm.textContent=p.nome;s.appendChild(nm);
+    var wp=document.createElement("div");wp.className="nm";
+    if(p.foto){var im=document.createElement("img");im.className="th";im.src=p.foto;im.alt="";im.onclick=function(){abrirFoto(p.foto)};wp.appendChild(im)}
+    var tx=document.createElement("div");
+    var nm=document.createElement("b");nm.textContent=p.nome;tx.appendChild(nm);
     var mt=document.createElement("div");mt.className="meta";mt.style.marginTop="2px";
     mt.textContent=(p.custo?"Custo "+money(num(p.custo)):"Sem custo")+(p.preco?" · Venda "+money(num(p.preco)):"");
-    s.appendChild(mt);
+    tx.appendChild(mt);wp.appendChild(tx);s.appendChild(wp);
     var bt=document.createElement("div");bt.style.display="flex";bt.style.gap="4px";
     var l=document.createElement("button");l.className="sm";l.textContent="Lançar";
     l.onclick=function(){abrirForm({nome:p.nome,compra:p.custo,anuncio:p.preco,qtd:"1"},null)};
     var e=document.createElement("button");e.className="s sm";e.textContent="Editar";
-    e.onclick=function(){pEdit=p.id;$("pnome").value=p.nome;$("pcusto").value=p.custo||"";$("ppreco").value=p.preco||"";$("pAdd").textContent="Salvar";$("pCancel").hidden=false;$("pTitulo").textContent="Editar produto";window.scrollTo({top:0,behavior:"smooth"})};
+    e.onclick=function(){pEdit=p.id;$("pnome").value=p.nome;$("pcusto").value=p.custo||"";$("ppreco").value=p.preco||"";pFoto=p.foto||"";mostrarFoto();$("pAdd").textContent="Salvar";$("pCancel").hidden=false;$("pTitulo").textContent="Editar produto";window.scrollTo({top:0,behavior:"smooth"})};
     var d=document.createElement("button");d.className="d sm";d.textContent=pDelArmed===p.id?"Confirmar?":"Excluir";
     d.onclick=async function(){
       if(pDelArmed!==p.id){pDelArmed=p.id;renderP();return}
@@ -267,7 +486,7 @@ function renderP(){
 }
 $("pAdd").onclick=async function(){
   var n=$("pnome").value.trim();if(!n){$("pnome").focus();return}
-  var o={id:pEdit||Date.now()+"",nome:n,custo:$("pcusto").value,preco:$("ppreco").value};
+  var o={id:pEdit||Date.now()+"",nome:n,custo:$("pcusto").value,preco:$("ppreco").value,foto:pFoto};
   $("pAdd").disabled=true;
   var r=await sb.from("produtos").upsert(toRow(o));
   $("pAdd").disabled=false;
@@ -287,139 +506,86 @@ $("nome").addEventListener("input",function(){
   preview();
 });
 
-var th=null;try{th=localStorage.getItem("revenda_tema")}catch(e){}
-if(th)document.documentElement.setAttribute("data-theme",th);
+function passaData(i){
+  if(!fMes&&!fDia)return true;
+  var v=i[fBase]||"";if(!v)return false;
+  return fDia?v===fDia:v.slice(0,7)===fMes;
+}
+$("fBase").onchange=function(){fBase=this.value;renderLista()};
+$("fMes").onchange=function(){fMes=this.value;if(fMes){fDia="";$("fDia").value=""}renderLista()};
+$("fDia").onchange=function(){fDia=this.value;if(fDia){fMes="";$("fMes").value=""}renderLista()};
+$("fLimpar").onclick=function(){fMes="";fDia="";$("fMes").value="";$("fDia").value="";renderLista()};
+
+function fotoDe(nome){
+  var v=String(nome||"").trim().toLowerCase();
+  var p=prods.find(function(x){return x.foto&&x.nome.trim().toLowerCase()===v});
+  return p?p.foto:"";
+}
+function mostrarFoto(){
+  var b=$("pFotoBox");b.innerHTML="";
+  if(pFoto){var im=document.createElement("img");im.className="th";im.src=pFoto;im.alt="Foto do produto";b.appendChild(im)}
+  else{var ph=document.createElement("div");ph.className="ph";ph.textContent="📦";b.appendChild(ph)}
+  $("pFotoRem").hidden=!pFoto;
+}
+function lerFoto(file){
+  return new Promise(function(res,rej){
+    var fr=new FileReader();
+    fr.onerror=function(){rej(new Error("Não foi possível ler a imagem."))};
+    fr.onload=function(){
+      var im=new Image();
+      im.onerror=function(){rej(new Error("Imagem inválida."))};
+      im.onload=function(){
+        var M=480,k=Math.min(1,M/Math.max(im.width,im.height)),w=Math.round(im.width*k),h=Math.round(im.height*k);
+        var cv=document.createElement("canvas");cv.width=w;cv.height=h;
+        cv.getContext("2d").drawImage(im,0,0,w,h);
+        res(cv.toDataURL("image/jpeg",.72));
+      };
+      im.src=fr.result;
+    };
+    fr.readAsDataURL(file);
+  });
+}
+$("pFoto").onchange=async function(){
+  var f=this.files&&this.files[0];this.value="";
+  if(!f)return;
+  try{pFoto=await lerFoto(f);aviso("");mostrarFoto()}
+  catch(e){aviso((e&&e.message)||"Não foi possível usar essa imagem.")}
+};
+$("pFotoRem").onclick=function(){pFoto="";mostrarFoto()};
+function abrirFoto(src){
+  var d=document.createElement("div");d.className="lb";
+  var im=document.createElement("img");im.src=src;im.alt="";d.appendChild(im);
+  d.onclick=function(){d.remove()};
+  document.body.appendChild(d);
+}
+mostrarFoto();
+
 $("tema").onclick=function(){
-  var cur=document.documentElement.getAttribute("data-theme")||(matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light");
-  var nx=cur==="dark"?"light":"dark";document.documentElement.setAttribute("data-theme",nx);
-  try{localStorage.setItem("revenda_tema",nx)}catch(e){}
+  var r=document.documentElement,a=r.getAttribute("data-theme");
+  var dark=a==="dark"||(a!=="light"&&window.matchMedia("(prefers-color-scheme:dark)").matches);
+  var n=dark?"light":"dark";
+  r.setAttribute("data-theme",n);
+  try{localStorage.setItem("tema",n)}catch(e){}
 };
 
-function mostrarLogin(){
-  $("app").hidden=true;$("sair").hidden=true;$("login").hidden=false;
+async function init(){
+  setTab("resumo");render();
+  if(!window.supabase){aviso("Não foi possível carregar a biblioteca do Supabase. Verifique a conexão e recarregue a página.");return}
+  sb=window.supabase.createClient(SB_URL,SB_KEY);
+  try{
+    var r=await Promise.all([sb.from("itens").select("id,dados"),sb.from("produtos").select("id,dados")]);
+    if(r[0].error)throw r[0].error;
+    if(r[1].error)throw r[1].error;
+    items=(r[0].data||[]).map(fromRow).sort(function(a,b){return (Number(b.id)||0)-(Number(a.id)||0)});
+    prods=(r[1].data||[]).map(fromRow);
+    sortProds();
+    aviso("");
+  }catch(e){
+    aviso("Não foi possível carregar da nuvem: "+((e&&e.message)||e));
+  }
+  render();
 }
-async function iniciar(){
-  var s=await sb.auth.getSession();
-  if(!s.data.session){mostrarLogin();return}
-  $("login").hidden=true;$("app").hidden=false;$("sair").hidden=false;
-  var a=await sb.from("itens").select("id,dados").order("criado_em",{ascending:false});
-  var b=await sb.from("produtos").select("id,dados");
-  if(a.error||b.error){aviso("Não foi possível carregar os dados: "+(a.error||b.error).message)}
-  else aviso("");
-  items=(a.data||[]).map(fromRow);
-  prods=(b.data||[]).map(fromRow);sortProds();
-  setTab(tab);render();
-}
-$("entrar").onclick=async function(){
-  $("loginMsg").textContent="";
-  $("entrar").disabled=true;
-  var r=await sb.auth.signInWithPassword({email:$("email").value.trim(),password:$("senha").value});
-  $("entrar").disabled=false;
-  if(r.error){$("loginMsg").textContent="E-mail ou senha incorretos.";return}
-  $("senha").value="";
-  iniciar();
-};
-$("senha").addEventListener("keydown",function(e){if(e.key==="Enter")$("entrar").click()});
-$("sair").onclick=async function(){
-  await sb.auth.signOut();items=[];prods=[];fecharForm();limparProd();mostrarLogin();
-};
-if(typeof supabase==="undefined"){
-  aviso("Não foi possível carregar o Supabase. Verifique a conexão e recarregue a página.");
-}else{
-  sb=supabase.createClient(SB_URL,SB_KEY);
-  iniciar();
-}<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Controle de Revenda</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
-<main>
-<div class="bar">
-  <div class="brand"><div class="logo" aria-hidden="true">📦</div><h1>Controle de Revenda</h1></div>
-  <div class="bt"><button class="s" id="tema">🌓</button><button class="s" id="sair" hidden>Sair</button></div>
-</div>
-<div class="aviso" id="aviso" hidden></div>
-
-<div class="card" id="login" hidden>
-<h2>Entrar</h2>
-<div class="grid">
-<label class="full">E-mail<input id="email" type="email" autocomplete="username" inputmode="email"></label>
-<label class="full">Senha<input id="senha" type="password" autocomplete="current-password"></label>
-</div>
-<div class="row"><button id="entrar">Entrar</button></div>
-<div class="meta" id="loginMsg"></div>
-</div>
-
-<div id="app" hidden>
-<nav class="tabs" id="tabs">
-<button data-tab="resumo">Resumo</button>
-<button data-tab="pedidos">Pedidos</button>
-<button data-tab="produtos">Produtos</button>
-</nav>
-
-<section id="v-resumo">
-<div id="hero"></div>
-<div class="sum" id="sum"></div>
-<div class="card" id="plat"></div>
-<div class="card" id="mes"></div>
-<div class="card" id="top"></div>
-</section>
-
-<section id="v-pedidos" hidden>
-<button class="novo" id="novo">+ Lançar pedido</button>
-<div class="card" id="formCard" hidden>
-<h2 id="formTitulo">Novo pedido</h2>
-<div class="grid">
-<label class="full">Produto<input id="nome" list="listaProds" placeholder="Escolha um produto cadastrado ou digite"><datalist id="listaProds"></datalist></label>
-<label>Quantidade<input id="qtd" type="number" inputmode="numeric" min="1" step="1" value="1"></label>
-<label>Valor de compra (cada) R$<input id="compra" type="number" inputmode="decimal" step="0.01"></label>
-<label>Frete da compra (total) R$<input id="frete" type="number" inputmode="decimal" step="0.01"></label>
-<label>Data da compra<input id="dCompra" type="date"></label>
-<label>Chegou em<input id="dChegada" type="date"></label>
-<label>Anúncio publicado em<input id="dAnuncio" type="date"></label>
-<label>Preço anunciado (cada) R$<input id="anuncio" type="number" inputmode="decimal" step="0.01"></label>
-<label>Valor vendido (cada) R$<input id="venda" type="number" inputmode="decimal" step="0.01"></label>
-<label>Frete cobrado do comprador (total) R$<input id="freteCob" type="number" inputmode="decimal" step="0.01"></label>
-<label>Data da venda<input id="dVenda" type="date"></label>
-<label>Vendido em<select id="plataforma"><option value="">—</option><option>Facebook Marketplace</option><option>Mercado Livre</option><option>Shopee</option><option>Venda direta</option></select></label>
-<label>Comprador<input id="comprador" placeholder="Nome"></label>
-<label class="full">Contato do comprador (opcional)<input id="contato" placeholder="WhatsApp, telefone ou perfil"></label>
-</div>
-<div class="prev" id="prev"></div>
-<div class="row">
-<button id="save">Adicionar</button>
-<button class="s" id="cancel">Cancelar</button>
-<button class="d" id="del" hidden>Excluir</button>
-</div>
-</div>
-<div class="chips" id="chips"></div>
-<div id="list"></div>
-</section>
-
-<section id="v-produtos" hidden>
-<div class="card">
-<h2 id="pTitulo">Cadastrar produto</h2>
-<p class="dica">Produtos salvos aqui aparecem ao lançar um pedido, já com custo e preço. Você só ajusta o que mudou.</p>
-<div class="grid">
-<label class="full">Nome do produto<input id="pnome" placeholder="Ex.: Fone Bluetooth"></label>
-<label>Custo usual (cada) R$<input id="pcusto" type="number" inputmode="decimal" step="0.01"></label>
-<label>Preço de venda (cada) R$<input id="ppreco" type="number" inputmode="decimal" step="0.01"></label>
-</div>
-<div class="row"><button id="pAdd">Cadastrar</button><button class="s" id="pCancel" hidden>Cancelar</button></div>
-</div>
-<div class="card"><h2>Meus produtos</h2><div id="pList"></div></div>
-</section>
-</div>
-</main>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="js1.js"></script>
-<script src="js2.js"></script>
-<script src="js3.js"></script>
+init();
+</script>
 </body>
 </html>
